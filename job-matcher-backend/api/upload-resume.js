@@ -1,7 +1,10 @@
 import { promises as fs } from 'fs';
 import formidable from 'formidable-serverless';
 import mammoth from 'mammoth';
-import pdfParse from 'pdf-parse';
+// import pdfParse from 'pdf-parse';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 
 export const config = {
   api: {

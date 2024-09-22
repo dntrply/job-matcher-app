@@ -20,11 +20,15 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Only POST requests allowed' });
     }
 
-    const { resume, jobDescription } = req.body;
+    const { resume, jobDescription, systemPrompt } = req.body;
 
     if (!resume || !jobDescription) {
         return res.status(400).json({ message: 'Resume and job description are required.' });
     }
+
+    // console.log('Resume:', resume);
+    // console.log('Job Description:', jobDescription);
+    // console.log('System Prompt:', systemPrompt);
 
     try {
         const response = await axios.post(
@@ -32,8 +36,8 @@ export default async function handler(req, res) {
             {
                 model: 'gpt-4',
                 messages: [
-                    { role: 'system', content: 'You are a helpful assistant.' },
-                    { role: 'user', content: `Compare the resume and job description and return a match score. Do nt add any rational.\n\nResume: ${resume}\n\nJob Description: ${jobDescription}\n\nMatch Score:` }
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `Resume: ${resume}\n\nJob Description: ${jobDescription}\n\nMatch Score:` }
                 ],
             },
             {
@@ -43,8 +47,17 @@ export default async function handler(req, res) {
             }
         );
 
-        const matchScore = response.data.choices[0].message.content.trim();
-        res.status(200).json({ matchScore });
+        // console.log('OpenAI Response:', response.data);
+
+    // Parse the response to extract matchScore and matches
+    const responseData = JSON.parse(response.data.choices[0].message.content.trim());
+
+    console.log('Response Data:', responseData);
+    const matchScore = responseData.matchScore;
+    const matches = responseData.matches;
+
+    // Send the parsed data back to the front end
+    res.status(200).json({ matchScore, matches });
     } catch (error) {
         console.error('Error calling OpenAI API:', error);
         res.status(500).json({ message: 'Server error. Please try again later.' });
