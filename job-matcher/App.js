@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, Button, View, ScrollView, Alert } from 'react-native';
+import { Text, TextInput, Button, View, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
@@ -8,6 +8,7 @@ export default function App() {
   const [resume, setResume] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [matchScore, setMatchScore] = useState(null);
+  const [loading, setLoading] = useState(false); // Add a loading state
 
   const isLocal = true; // Set to false for production
   const ngrokurl = 'https://29b9-111-125-253-154.ngrok-free.app';
@@ -21,16 +22,10 @@ export default function App() {
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'],
       });
   
-      console.log('App.js --> file: ', file);
-  
       if (!file.canceled && file.assets && file.assets.length > 0) {
-        const fileUri = file.assets[0].uri;  // Correct file URI
-        const fileName = file.assets[0].file.name;  // Correct file name
-        const fileType = file.assets[0].file.type;  // Correct file type
-  
-        // console.log(`File URI: ${fileUri}`);
-        console.log(`File Name: ${fileName}`);
-        console.log(`File Type: ${fileType}`);
+        const fileUri = file.assets[0].uri;
+        const fileName = file.assets[0].file.name;
+        const fileType = file.assets[0].file.type;
   
         const formData = new FormData();
         formData.append('file', {
@@ -57,10 +52,12 @@ export default function App() {
       console.error(error);
     }
   };
-  
 
   const handleMatch = async () => {
     try {
+      setLoading(true); // Show the loading spinner
+      setMatchScore(null); // Clear the previous match score
+
       const response = await axios.post(`${baseURL}/api/match`, {
         resume,
         jobDescription,
@@ -68,8 +65,9 @@ export default function App() {
 
       const data = response.data;
       setMatchScore(data.matchScore);
-      Alert.alert(`Match Score: ${data.matchScore}`);
+      setLoading(false); // Hide the loading spinner
     } catch (error) {
+      setLoading(false); // Hide the loading spinner
       Alert.alert('Error', 'Failed to fetch match score. Please try again later.');
       console.error(error);
     }
@@ -102,7 +100,9 @@ export default function App() {
 
         <Button title="Match" onPress={handleMatch} />
 
-        {matchScore !== null && (
+        {loading && <ActivityIndicator size="large" color="#0000ff" />} {/* Show spinner when loading */}
+        
+        {!loading && matchScore !== null && (
           <Text style={{ fontSize: 18, marginTop: 20 }}>Match Score: {matchScore}</Text>
         )}
       </View>
