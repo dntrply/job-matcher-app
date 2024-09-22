@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, Button, View, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { Text, TextInput, Button, View, ScrollView, Alert, ActivityIndicator, Platform } from 'react-native';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
@@ -11,8 +11,8 @@ export default function App() {
   const [loading, setLoading] = useState(false); // Add a loading state
 
   const isLocal = true; // Set to false for production
-  const ngrokurl = 'https://29b9-111-125-253-154.ngrok-free.app';
-  const vercelbackendurl = 'https://job-matcher-backend-m6n58jpcj-dntrplys-projects.vercel.app';
+  const ngrokurl = 'https://420c-111-125-253-154.ngrok-free.app';
+  const vercelbackendurl = 'https://job-matcher-backend.vercel.app';
 
   const baseURL = isLocal ? ngrokurl : vercelbackendurl;
 
@@ -21,26 +21,40 @@ export default function App() {
       const file = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'],
       });
-  
+
       if (!file.canceled && file.assets && file.assets.length > 0) {
         const fileUri = file.assets[0].uri;
-        const fileName = file.assets[0].file.name;
-        const fileType = file.assets[0].file.type;
-  
         const formData = new FormData();
-        formData.append('file', {
-          uri: fileUri,
-          name: fileName,
-          type: fileType
-        });
-  
-        // Send the file to the backend for processing
-        const response = await axios.post(`${baseURL}/api/upload-resume`, file.assets[0], {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-  
+        let response = '';
+
+        if (Platform.OS === 'android') {
+          console.log('file: ', file);
+          const fileName = file.assets[0].name;
+          const fileType = file.assets[0].mimeType;
+
+          formData.append('file', {
+            uri: fileUri,
+            name: fileName,
+            type: fileType,
+          });
+          response = await axios.post(`${baseURL}/api/upload-resume`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+
+        } else if (Platform.OS === 'web') {
+          console.log('web file:', file);
+          // Send the file to the backend for processing
+          response = await axios.post(`${baseURL}/api/upload-resume`, file.assets[0], {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        }
+
+
+
         const { resumeText } = response.data;
         setResume(resumeText);
         Alert.alert('File uploaded and processed successfully');
@@ -100,8 +114,8 @@ export default function App() {
 
         <Button title="Match" onPress={handleMatch} />
 
-        {loading && <ActivityIndicator size="large" color="#0000ff" />} {/* Show spinner when loading */}
-        
+        {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
         {!loading && matchScore !== null && (
           <Text style={{ fontSize: 18, marginTop: 20 }}>Match Score: {matchScore}</Text>
         )}
