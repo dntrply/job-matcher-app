@@ -15,27 +15,40 @@ export default function App() {
 
   const baseURL = isLocal ? ngrokurl : vercelbackendurl;
 
-  // Function to handle document upload
   const handleDocumentUpload = async () => {
     try {
-      console.log('handleDocumentUpload entered');
       const file = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'],
       });
-
-      console.log('APp.js --> file: ', file);
-
-
+  
+      console.log('App.js --> file: ', file);
+  
       if (!file.canceled && file.assets && file.assets.length > 0) {
-        const selectedFile = file.assets[0].file;
-        console.log(`File Name: ${selectedFile.name}`);
-        console.log(`File Type: ${selectedFile.type}`);
-        console.log(`File URI: ${file.assets[0].uri}`);
-        console.log(`File size: ${file.assets[0].size}`);
-
-
-        setResume(file.assets[0].uri);  // You can set it to base64 or handle it differently based on your backend processing
-        Alert.alert('File uploaded successfully');
+        const fileUri = file.assets[0].uri;  // Correct file URI
+        const fileName = file.assets[0].file.name;  // Correct file name
+        const fileType = file.assets[0].file.type;  // Correct file type
+  
+        // console.log(`File URI: ${fileUri}`);
+        console.log(`File Name: ${fileName}`);
+        console.log(`File Type: ${fileType}`);
+  
+        const formData = new FormData();
+        formData.append('file', {
+          uri: fileUri,
+          name: fileName,
+          type: fileType
+        });
+  
+        // Send the file to the backend for processing
+        const response = await axios.post(`${baseURL}/api/upload-resume`, file.assets[0], {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+  
+        const { resumeText } = response.data;
+        setResume(resumeText);
+        Alert.alert('File uploaded and processed successfully');
       } else {
         console.log('File selection was canceled.');
       }
@@ -44,50 +57,23 @@ export default function App() {
       console.error(error);
     }
   };
+  
 
-const handleDocumentUpload = async () => {
-  try {
-    const file = await DocumentPicker.getDocumentAsync({
-      type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'],
-    });
-
-    console.log('App.js --> file: ', file);
-
-    if (!file.canceled && file.assets && file.assets.length > 0) {
-      const fileUri = file.assets[0].uri;  // Correct file URI
-      const fileName = file.assets[0].file.name;  // Correct file name
-      const fileType = file.assets[0].file.type;  // Correct file type
-
-      console.log(`File URI: ${fileUri}`);
-      console.log(`File Name: ${fileName}`);
-      console.log(`File Type: ${fileType}`);
-
-      const formData = new FormData();
-      formData.append('file', {
-        uri: fileUri,
-        name: fileName,
-        type: fileType
+  const handleMatch = async () => {
+    try {
+      const response = await axios.post(`${baseURL}/api/match`, {
+        resume,
+        jobDescription,
       });
 
-      // Send the file to the backend for processing
-      const response = await axios.post(`${baseURL}/api/upload-resume`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      const { resumeText } = response.data;
-      setResume(resumeText);
-      Alert.alert('File uploaded and processed successfully');
-    } else {
-      console.log('File selection was canceled.');
+      const data = response.data;
+      setMatchScore(data.matchScore);
+      Alert.alert(`Match Score: ${data.matchScore}`);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch match score. Please try again later.');
+      console.error(error);
     }
-  } catch (error) {
-    Alert.alert('Error', 'Failed to upload the document. Please try again.');
-    console.error(error);
-  }
-};
-
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }}>
