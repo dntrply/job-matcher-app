@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
             {
-                model: 'gpt-4',
+                model: 'gpt-4o',
                 messages: [
                     { role: 'system', content: 'You are a helpful assistant.' },
                     { role: 'user', content: `Compare the resume and job description and return a match score. Do nt add any rational.\n\nResume: ${resume}\n\nJob Description: ${jobDescription}\n\nMatch Score:` }
