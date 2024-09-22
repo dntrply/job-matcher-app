@@ -7,8 +7,18 @@ import * as FileSystem from 'expo-file-system';
 export default function App() {
   const [resume, setResume] = useState('');
   const [jobDescription, setJobDescription] = useState('');
-  const [matchScore, setMatchScore] = useState(null);
-  const [loading, setLoading] = useState(false); // Add a loading state
+  const [systemPrompt, setSystemPrompt] = useState(`Your job is to compare the Resume and Job Description and return an integer matching score between 0 and 10
+    with 0 being no match and 10 being a perfect match. For a match score of 5 or higher, please provide the three
+    keywords from the resume that appear the strongest fit to the job descripton,
+    Please provide the score as:
+    Score: 7
+    Please provide these matches as:
+    Matches: Python, startup, database.
+    Please wrap your response in a JSON object with the key "matchScore" for the score and "matches" for the keywords.
+    Please see the Resume and Job Description below:`);
+const [loading, setLoading] = useState(false); // Add a loading state
+const [matchScore, setMatchScore] = useState(null);
+const [matchingKeywords, setMatchingKeywords] = useState([]); // New state for matching keywords
 
   const isLocal = true; // Set to false for production
   const ngrokurl = 'https://420c-111-125-253-154.ngrok-free.app';
@@ -53,8 +63,6 @@ export default function App() {
           });
         }
 
-
-
         const { resumeText } = response.data;
         setResume(resumeText);
         Alert.alert('File uploaded and processed successfully');
@@ -71,14 +79,17 @@ export default function App() {
     try {
       setLoading(true); // Show the loading spinner
       setMatchScore(null); // Clear the previous match score
+      setMatchingKeywords([]); // Clear the previous matching keywords
 
       const response = await axios.post(`${baseURL}/api/match`, {
         resume,
         jobDescription,
+        systemPrompt, // Include system prompt in the request
       });
 
       const data = response.data;
       setMatchScore(data.matchScore);
+      setMatchingKeywords(data.matches); // Set the matching keywords
       setLoading(false); // Hide the loading spinner
     } catch (error) {
       setLoading(false); // Hide the loading spinner
@@ -112,12 +123,25 @@ export default function App() {
           value={jobDescription}
         />
 
+        <TextInput
+          style={{ height: 150, width: '100%', borderColor: 'gray', borderWidth: 1, marginBottom: 20, padding: 10, textAlignVertical: 'top' }}
+          multiline
+          placeholder="Enter system prompt here"
+          onChangeText={text => setSystemPrompt(text)}
+          value={systemPrompt}
+        />
+
         <Button title="Match" onPress={handleMatch} />
 
         {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
         {!loading && matchScore !== null && (
-          <Text style={{ fontSize: 18, marginTop: 20 }}>Match Score: {matchScore}</Text>
+          <View style={{ marginTop: 20 }}>
+            <Text style={{ fontSize: 18 }}>Match Score: {matchScore}</Text>
+            {matchingKeywords.length > 0 && (
+              <Text style={{ fontSize: 18 }}>Matches: {matchingKeywords.join(', ')}</Text>
+            )}
+          </View>
         )}
       </View>
     </ScrollView>
