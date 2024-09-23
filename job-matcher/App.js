@@ -3,10 +3,11 @@ import { Text, TextInput, Button, View, ScrollView, Alert, ActivityIndicator, Pl
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import { LinearGradient } from 'expo-linear-gradient'; // Import LinearGradient
 
 export default function App() {
-  const [resume, setResume] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
+  const [resume, setResume] = useState('doktor'); // Default value for resume
+  const [jobDescription, setJobDescription] = useState('doctor'); // Default value for job description
   const [systemPrompt, setSystemPrompt] = useState(`Your job is to compare the Resume and Job Description and return an integer matching score between 0 and 10
     with 0 being no match and 10 being a perfect match. For a match score of 5 or higher, please provide the three
     keywords from the resume that appear the strongest fit to the job descripton,
@@ -16,9 +17,10 @@ export default function App() {
     Matches: Python, startup, database.
     Please wrap your response in a JSON object with the key "matchScore" for the score and "matches" for the keywords.
     Please see the Resume and Job Description below:`);
-const [loading, setLoading] = useState(false); // Add a loading state
-const [matchScore, setMatchScore] = useState(null);
-const [matchingKeywords, setMatchingKeywords] = useState([]); // New state for matching keywords
+
+  const [loading, setLoading] = useState(false); // Add a loading state
+  const [matchScore, setMatchScore] = useState(null);
+  const [matchingKeywords, setMatchingKeywords] = useState([]); // New state for matching keywords
 
   const isLocal = true; // Set to false for production
   const ngrokurl = 'https://420c-111-125-253-154.ngrok-free.app';
@@ -98,6 +100,8 @@ const [matchingKeywords, setMatchingKeywords] = useState([]); // New state for m
     }
   };
 
+  const isMatchButtonEnabled = resume.trim() !== '' && jobDescription.trim() !== '' && systemPrompt.trim() !== '';
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -131,15 +135,33 @@ const [matchingKeywords, setMatchingKeywords] = useState([]); // New state for m
           value={systemPrompt}
         />
 
-        <Button title="Match" onPress={handleMatch} />
+        <Button title="Match" onPress={handleMatch} disabled={!isMatchButtonEnabled} />
 
         {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
         {!loading && matchScore !== null && (
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 20, width: '100%', alignItems: 'center' }}>
             <Text style={{ fontSize: 18 }}>Match Score: {matchScore}</Text>
+            <View style={{ width: 300, height: 10, marginVertical: 10, backgroundColor: '#ddd', borderRadius: 5, overflow: 'hidden' }}>
+              <LinearGradient
+                colors={matchScore < 5 ? ['red', 'red'] : ['green', 'green']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ width: `${matchScore * 10}%`, height: '100%' }}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 300 }}>
+              <Text>No Match</Text>
+              <Text>Perfect Match</Text>
+            </View>
             {matchingKeywords.length > 0 && (
-              <Text style={{ fontSize: 18 }}>Matches: {matchingKeywords.join(', ')}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
+                {matchingKeywords.map((keyword, index) => (
+                  <View key={index} style={{ backgroundColor: '#e0e0e0', borderRadius: 15, paddingHorizontal: 10, paddingVertical: 5, margin: 5 }}>
+                    <Text style={{ fontSize: 14 }}>{keyword}</Text>
+                  </View>
+                ))}
+              </View>
             )}
           </View>
         )}
