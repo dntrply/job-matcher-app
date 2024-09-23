@@ -16,7 +16,7 @@
     "formidable-serverless": "^1.1.1",
     "mammoth": "^1.8.0",
     "module": "^1.2.5",
-    "openai": "^4.62.1",
+    "openai": "^4.63.0",
     "pdf-parse": "^1.1.1"
   },
   "type": "module"

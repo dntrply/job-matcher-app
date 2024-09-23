@@ -1,4 +1,4 @@
-import axios from 'axios';
+import OpenAI from 'openai';
 import 'dotenv/config';
 
 export default async function handler(req, res) {
@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');      
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         return res.status(200).end();
     }
 
@@ -14,7 +14,6 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
 
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Only POST requests allowed' });
@@ -26,38 +25,36 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: 'Resume and job description are required.' });
     }
 
-    // console.log('Resume:', resume);
-    // console.log('Job Description:', jobDescription);
-    // console.log('System Prompt:', systemPrompt);
+    // Initialize OpenAI API client
+    // Initialize OpenAI API client
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     try {
-        const response = await axios.post(
-            'https://api.openai.com/v1/chat/completions',
-            {
-                model: 'gpt-4',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `Resume: ${resume}\n\nJob Description: ${jobDescription}\n\nMatch Score:` }
-                ],
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                },
-            }
-        );
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: `Resume: ${resume}\n\nJob Description: ${jobDescription}\n\nMatch Score:` }
+            ],
+        });
 
-        // console.log('OpenAI Response:', response.data);
+        let responseContent = response.choices[0].message.content;
+        console.log('OpenAI Response:', responseContent);
 
-    // Parse the response to extract matchScore and matches
-    const responseData = JSON.parse(response.data.choices[0].message.content.trim());
+        // Remove backticks from the response content
+        responseContent = responseContent.replace(/```json|```/g, '').trim();
 
-    console.log('Response Data:', responseData);
-    const matchScore = responseData.matchScore;
-    const matches = responseData.matches;
+        // Parse the cleaned response content as JSON
+        const responseData = JSON.parse(responseContent);
 
-    // Send the parsed data back to the front end
-    res.status(200).json({ matchScore, matches });
+        console.log('Parsed Response Data:', responseData);
+        const matchScore = responseData.matchScore;
+        const matches = responseData.matches;
+
+        // Send the parsed data back to the front end
+        res.status(200).json({ matchScore, matches });
     } catch (error) {
         console.error('Error calling OpenAI API:', error);
         res.status(500).json({ message: 'Server error. Please try again later.' });
