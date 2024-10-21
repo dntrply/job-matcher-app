@@ -39,13 +39,14 @@ Note that job-matcher\App.js has the code:
 
 ````
   const isLocal = false; // Set to false for production
-```
+````
+
 When islocal is false, it will currently use the frontend on the laptop and the backend on Vercel
 
 When doing backend development on the laptopn, the suggestion is to use
 ````
   const isLocal = true; // Set to false for production
-```
+````
 which will use the laptop for both the backend and the frontend
 
 One can also use ngrok (instead of expo tunnel) to get a URL accessible from the outside.
@@ -211,7 +212,8 @@ Likewise, on the VErcel project settings page for the front end, I neded to make
 
 
 
-**Transcript**
+**Transcript - Terminal 1 **
+
 Transcript of tring to get the front end working on VErecl:
 PS C:\Users\dntrp\projects\job-matcher-app>
 
@@ -599,6 +601,7 @@ PS C:\Users\dntrp\projects\job-matcher-app\job-matcher>
 
 
 **Transcript**
+
 Transcript to get app running locally, as well as pushing hte dev version of frontend to Vercel as well as pushing a
 prod version of frontend to vercel:
 
@@ -910,6 +913,7 @@ Web Bundled 76ms C:\Users\dntrp\projects\job-matcher-app\job-matcher\node_module
 
 
 **Transcript**
+
 From the third terminal I had running
 PS C:\Users\dntrp\projects\job-matcher-app> cd .\job-matcher-backend\
 PS C:\Users\dntrp\projects\job-matcher-app\job-matcher-backend> vercel login
