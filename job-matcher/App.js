@@ -22,7 +22,7 @@ export default function App() {
   const [matchScore, setMatchScore] = useState(null);
   const [matchingKeywords, setMatchingKeywords] = useState([]); // New state for matching keywords
 
-  const isLocal = true; // Set to false for production
+  const isLocal = false; // Set to false for production
   const ngrokurl = 'https://420c-111-125-253-154.ngrok-free.app';
   const vercelbackendurl = 'https://job-matcher-backend.vercel.app';
 
