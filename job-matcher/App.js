@@ -6,8 +6,8 @@ import * as FileSystem from 'expo-file-system';
 import { LinearGradient } from 'expo-linear-gradient'; // Import LinearGradient
 
 export default function App() {
-  const [resume, setResume] = useState('doktor'); // Default value for resume
-  const [jobDescription, setJobDescription] = useState('doctor'); // Default value for job description
+  const [resume, setResume] = useState('I am a doctor with 5 years of experience'); // Default value for resume
+  const [jobDescription, setJobDescription] = useState('seeking doctor with 5 years of experience'); // Default value for job description
   const [systemPrompt, setSystemPrompt] = useState(`Your job is to compare the Resume and Job Description and return an integer matching score between 0 and 10
     with 0 being no match and 10 being a perfect match. For a match score of 5 or higher, please provide the three
     keywords from the resume that appear the strongest fit to the job descripton,
@@ -119,6 +119,7 @@ export default function App() {
           value={resume}
         />
 
+        <Text style={{ fontSize: 18, marginTop: 20 }}>Enter Job description:</Text>
         <TextInput
           style={{ height: 150, width: '100%', borderColor: 'gray', borderWidth: 1, marginBottom: 20, padding: 10, textAlignVertical: 'top' }}
           multiline
@@ -127,6 +128,7 @@ export default function App() {
           value={jobDescription}
         />
 
+        <Text style={{ fontSize: 18, marginTop: 20 }}>System Prompt:</Text>
         <TextInput
           style={{ height: 150, width: '100%', borderColor: 'gray', borderWidth: 1, marginBottom: 20, padding: 10, textAlignVertical: 'top' }}
           multiline

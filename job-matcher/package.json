@@ -14,13 +14,14 @@
     "expo": "~51.0.28",
     "expo-document-picker": "~12.0.2",
     "expo-file-system": "~17.0.1",
+    "expo-linear-gradient": "~13.0.2",
     "expo-status-bar": "~1.12.1",
+    "expo-web": "^0.0.14",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
     "react-native-progress": "^5.0.1",
-    "react-native-web": "~0.19.10",
-    "expo-linear-gradient": "~13.0.2"
+    "react-native-web": "~0.19.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
