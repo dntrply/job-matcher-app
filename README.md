@@ -218,6 +218,7 @@ Likewise, on the VErcel project settings page for the front end, I neded to make
 3. Click on Settings (part of the tab menu after the first header row)
 4. Scroll down to "Build & Development Settings"
 5. For the "Install Command" field, enter npm install --legacy-peer-deps
+(Reference - [I am getting this error while deploying my nextjs app on vercel](https://stackoverflow.com/questions/72326176/i-am-getting-this-error-while-deploying-my-nextjs-app-on-vercel))
 
 
 **Transcript Terminal 1**
