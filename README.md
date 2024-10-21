@@ -8,6 +8,17 @@ I am sure this can be further influenced with the proper use of env variables la
 
 ## End of Recent development ##
 
+## Vercel Authentication ##
+
+For the front end, I have turned teh authentication off. It is best it be turned on later.
+It may also make sense to implement oAUth - especially if there is overuse / abuse of 
+the OpenAI usage or the VErcel usage. At a minimum, to tuern on Authentication so that a
+visito is forced to log im to Vercel before accessing the from end, navigate to the 
+project and then Settings --> Deployment Protection --> Vercel Authentication and mark it
+enabled
+
+## End of Vercel Authentication ##
+
 An app that does match making between a job seeker and an employer
 
 The code is at:
