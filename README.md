@@ -209,10 +209,7 @@ Likewise, on the VErcel project settings page for the front end, I neded to make
 5. For the "Install Command" field, enter npm install --legacy-peer-deps
 
 
-
-
-
-**Transcript - Terminal 1 **
+**Transcript Terminal 1**
 
 Transcript of tring to get the front end working on VErecl:
 PS C:\Users\dntrp\projects\job-matcher-app>
@@ -600,7 +597,7 @@ PS C:\Users\dntrp\projects\job-matcher-app\job-matcher>
 
 
 
-**Transcript**
+**Transcript Terminal 2**
 
 Transcript to get app running locally, as well as pushing hte dev version of frontend to Vercel as well as pushing a
 prod version of frontend to vercel:
@@ -912,7 +909,7 @@ Web Bundled 76ms C:\Users\dntrp\projects\job-matcher-app\job-matcher\node_module
 
 
 
-**Transcript**
+**Transcript Terminal 3**
 
 From the third terminal I had running
 PS C:\Users\dntrp\projects\job-matcher-app> cd .\job-matcher-backend\
